@@ -20,7 +20,7 @@ minWidth: 650,
 },
 chatSection: {
 width: '100%',
-height: '84vh',
+height: '90vh',
 },
 headBG: {
 backgroundColor: '#e0e0e0',
@@ -68,7 +68,7 @@ setInputText(event.target.value);
 };
 
 return (
-<div style={{position:'relative',top:'210px'}}>
+<div style={{height:'90hv',marginTop:150,marginBottom:100}}>
     <Grid container>
     <Grid item xs={12}>
         <Typography variant="h5" className={classes.headerMessage} style={{color:"#1dbf73"}} align='center'>
@@ -104,30 +104,6 @@ return (
             <ListItemText primary={<span className={classes.green}>Mohamed</span>} secondary="Remy Sharp" />
             <ListItemText secondary="online" align="right" />
         </ListItem>
-        {/* <ListItem button key="ouail">
-            <ListItemIcon>
-            <Avatar
-                alt="ouil"
-                src="../Component/WhatsApp Image 2023-04-08 at 14.05.35.jpeg"
-            />
-            </ListItemIcon>
-            <ListItemText
-            primary={<span className={classes.green}>ouil</span>}
-            secondary="ouil"
-            />
-            </ListItem>
-            <ListItem button key="annas">
-            <ListItemIcon>
-                <Avatar
-                alt="annas"
-                src="../Component/WIN_20230523_14_06_20_Pro.jpg"
-                />
-            </ListItemIcon>
-            <ListItemText
-                primary={<span className={classes.green}>annas</span>}
-                secondary="ouil"
-            />
-            </ListItem> */}
         </List>
     </Grid>
     <Grid item xs={9}>

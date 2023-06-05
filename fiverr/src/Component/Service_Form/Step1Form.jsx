@@ -20,8 +20,8 @@ primary: green,
 });
 
 const Query = gql`
-  query Query($idfreelancer: String!) {
-    servicesOfFreelancer(idfreelancer: $idfreelancer) {
+  query Query($token: String!) {
+    servicesOfFreelancer(token: $idfreelancer) {
       title
       subtitle
       subdescription
@@ -37,7 +37,7 @@ const Query = gql`
 
 export default function Step1Form() {
 // const [selectedImage, setSelectedImage] = useState(null);
-const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+const token = JSON.parse(localStorage.getItem("token"));
 const [description, setDescription] = useState('');
 const [Title,setTitle]=useState("");
 const [subdescription, setSubDescription] = useState('');
@@ -47,33 +47,32 @@ const [selectedCategory, setSelectedCategory] = useState('');
 const [subTitle, setsubTitle] = useState('');
 
 const { loading: queryLoading, error: queryError, data: queryData, refetch: refetchServices } = useQuery(Query, {
-  variables: { idfreelancer: currentUser.id },
+  variables: { token: token.token },
 });
 
 const [Mutation,{error}]=useMutation(
   gql`
   mutation Mutation(
-    $title: String! 
-    $subtitle: String! 
-    $description: String! 
-    $subdescription: String! 
-    $category: String! 
+    $token: String!
+    $title: String!
+    $subtitle: String!
+    $description: String!
+    $subdescription: String!
+    $category: String!
     $delevrytime: String! 
-    $price: String! 
-    $idfreelancer: String!
+    $price: String!
     ) {
     createService(
+      token: $token, 
       title: $title, 
       subtitle: $subtitle, 
       description: $description, 
       subdescription: $subdescription, 
       category: $category, 
       delevrytime: $delevrytime, 
-      price: $price, 
-      idfreelancer: $idfreelancer
+      price: $price
       ) {
-      title
-      subtitle
+      price
     }
   }
   `
@@ -90,7 +89,7 @@ const addService = () => {
                 category: selectedCategory,
                 delevrytime: Delivrey_Time,
                 price: price,
-                idfreelancer:currentUser.id
+                token:token.token,
             },
             })
             .then(() => {
@@ -185,7 +184,7 @@ Envoyer limage
             fullWidth
             multiline
             rows={4}
-            value={description}
+            value={subdescription}
             onChange={(e)=>setSubDescription(e.target.value)}
             
           />

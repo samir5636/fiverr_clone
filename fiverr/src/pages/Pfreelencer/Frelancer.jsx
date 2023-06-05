@@ -3,7 +3,12 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Card_service from '../../Component/Service_Form/Card_service';
-import { gql, useQuery } from '@apollo/client';
+import { gql, useQuery,useMutation } from '@apollo/client';
+import { useState, useEffect } from 'react';
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
+import IconButton from "@mui/material/IconButton";
+import {Typography} from "@material-ui/core";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -14,45 +19,102 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const GET_SERVICES_QUERY = gql`
-  query GetServices($idfreelancer: String!) {
-    servicesOfFreelancer(idfreelancer: $idfreelancer) {
-      title
-      subtitle
-      subdescription
-      price
-      idfreelancer
-      id
-      description
-      delevrytime
-      category
-    }
+query Query($token: String!) {
+  servicesByToken(token: $token) {
+    title
+    subtitle
+    subdescription
+    price
+    idfreelancer
+    id
+    description
+    delevrytime
+    category
   }
+}
+`;
+
+const DELETE_SERVICE = gql`
+mutation Mutation($token: String!
+  $deleteServiceId: ID!
+  ) {
+  deleteService(token: $token, 
+    id: $deleteServiceId) 
+    {
+    subdescription
+  }
+}
 `;
 
 
 function Frelancer() {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-  
+  const [servicesOfFreelancer, setServicesOfFreelancer] = useState([]);
+
+  const [deleteServiceMutation] = useMutation(DELETE_SERVICE);
+
+  const token = JSON.parse(localStorage.getItem('token'));
+  const [searchTerm, setSearchTerm] = useState('');
+
   const { loading, error, data, refetch } = useQuery(GET_SERVICES_QUERY, {
-    variables: { idfreelancer: currentUser.id },
+    variables: { token: token.token},
     fetchPolicy: 'network-only',
   });
+
+  useEffect(() => {
+    if (data && data.servicesByToken) {
+      setServicesOfFreelancer(data.servicesByToken);
+    }
+  }, [data]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
 
-  const servicesOfFreelancer = data?.servicesOfFreelancer || [];
+  const handleDeleteService = async (serviceId) => {
+    try {
+      await deleteServiceMutation({ variables: { deleteServiceId: serviceId ,token: token.token } });
+      setServicesOfFreelancer((prevServices) =>
+        prevServices.filter((service) => service.id !== serviceId)
+      );
+    } catch (error) {
+      console.error('Erreur lors de la suppression du service:', error);
+    }
+  };
+  const filteredServices = servicesOfFreelancer.filter(
+    (service) =>
+    service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    service.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   
   return (
     <>
-      <Grid container spacing={5} sx={{ flexGrow: 1, position: 'absolute', top: '200px' }}>
+      <Grid container spacing={3} sx={{ marginTop:'200px' }}>
+      <Grid item sx={5} md={5} sm={5} lg={8} alignContent="center">
+      <Box style={{ fontSize: '40px' }} 
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      >
+        <Typography variant="h3" style={{margin:'10px'}}>
+            fiverr<span style={{ color: "green" }}>.</span>
+          </Typography>
+        <TextField
+          sx={{ flexGrow: 1, width: '500px' }}
+          label="Search services"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <IconButton type="submit" aria-label="search">
+          <SearchIcon style={{ fill: 'green', width: '60px', height: '60px' }} />
+        </IconButton>
+      </Box>
+    </Grid>
         <Grid item sx={5} md={5} sm={5} lg={5}>
           <Item>
             <Box id="category-a" sx={{ fontSize: '20px', textTransform: 'uppercase' }}>
               Ajouter des services
             </Box>
             <Box component="ul" sx={{ color: '#19a463' }}>
-              <h1>Hello {currentUser.username},</h1>
+              <h1>Hello samir,</h1>
               <h3>you can add service</h3>
             </Box>
           </Item>
@@ -67,20 +129,20 @@ function Frelancer() {
         </Grid>
       </Grid>
 
-      <Box sx={{ flexGrow: 1, position: 'relative', top: '500px', left: '150px' }} flexDirection={'column-reverse'}>
-        <Grid container spacing={3}>
-          {servicesOfFreelancer.map((service) => (
-            <Grid item xs={8} sm={8} md={6} lg={4} key={service.id}>
-            <Card_service service={service} />
-          </Grid>
-        ))}
+    <Box sx={{ flexGrow: 1, margin:'40px', marginTop:'200px', }}> 
+    <Grid container spacing={4} > 
+      {filteredServices.map((service) => (
+        <Grid item xs={7} sm={6} md={5} lg={3} key={service.id}> 
+          <Card_service service={service} onDelete={handleDeleteService}/>
         </Grid>
-        </Box>
+      ))}
+    </Grid>
+    </Box>
         </>
         );
         }
         
-        export default Frelancer;
+export default Frelancer;
         
 
 

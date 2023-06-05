@@ -19,6 +19,8 @@ import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import Alert from '@mui/material/Alert';
 
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
 //
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { useMutation } from '@apollo/client';
@@ -26,6 +28,7 @@ import { gql } from "@apollo/client";
 
 //
 import {useNavigate} from 'react-router-dom';
+const defaultTheme = createTheme();
 
 function Form() {
     const [username, setUsername] = useState('');
@@ -40,23 +43,24 @@ function Form() {
     const [Mutation,{error}]=useMutation(
 
         gql`
-    mutation Mutation(
-    $username: String!
-    $email: String!
-    $password: String!
-    $country: String!
-    $phone: String!
-    $description: String!
+        mutation Mutation(
+        $username: String!
+        $email: String! 
+        $password: String! 
+        $country: String! 
+        $phone: String! 
+        $description: String!
 ) {
-  createFreelancer(
+    createFreelancer(
         username: $username
         email: $email
-        password: $password
-        country: $country
+        password: $password 
+        country: $country 
         phone: $phone
         description: $description
-    ) {
-    username
+        ) 
+        {
+        message
     }
 }
 `
@@ -64,7 +68,7 @@ function Form() {
     const navigate = useNavigate();
 
     const addUser = () => {
-        if (password.length < 8 || phone.length !== 10 || !validateEmail(email) || username === '' || email === '' || password === '' || country === '' || phone === '' || description === '') {
+        if (password.length < 8 || phone.length !== 10 || !validateEmail(email) || username === ''||username.length <6 || email === '' || password === '' || country === '' || phone === '' || description === '') {
             setErrorAlert(true);
         } else {
             Mutation({
@@ -91,13 +95,24 @@ function Form() {
     }
 
 return (
-    <div className="formContainer" style={{position:'absolute',left:'450px', display: 'flex', justifyContent: 'center', alignItems: 'center' ,width:'700px', top:"400px"}}>
-            
-            <Avatar sx={{ m: 1, bgcolor: 'green', }} style={{position:'absolute',left:'310px', display: 'flex', justifyContent: 'center', alignItems: 'center' , top:"-150px",backgroundColor:"green"}}>
+    <ThemeProvider theme={defaultTheme}>
+        <Box sx={{ flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center', 
+            justifyContent: 'center',
+            width:'700px',
+            margin: 'auto',
+            marginTop: '300px',
+            }}
+            >
+        
+        <Grid container spacing={6} justifyContent="center" alignItems="center">
+        <Avatar 
+            style={{backgroundColor:"green",margin:'30px'}}
+            >
             <LockOutlinedIcon />
             </Avatar>
-        <Box sx={{ flexGrow: 1 }}>
-        <Grid container spacing={6} justifyContent="center" alignItems="center">
         </Grid>
             <Grid container spacing={6} justifyContent="center" alignItems="center">
             <Grid>
@@ -168,9 +183,9 @@ return (
                         style={{ width: '100%', height: '200px' }}
                     />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} >
                     <Stack direction="row" alignItems="center" spacing={2} style={{backgroundColor:"#1dbf73", height:"50px"}}>
-                        <IconButton color="primary" aria-label="upload picture" component="label" style={{position:"absolute",left:"330px"}}>
+                        <IconButton color="primary" aria-label="upload picture" component="label" sx={{marginLeft: "auto", marginRight: "auto",}}>
                             <input hidden accept="image/*" type="file" />
                             <PhotoCamera />
                         </IconButton>
@@ -186,7 +201,10 @@ return (
                 </Grid>
             </Grid>
         </Box>
-    </div>
+
+    </ThemeProvider>
+        
+    
 );
 }
 

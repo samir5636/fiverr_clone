@@ -2,6 +2,7 @@
 import { useState} from 'react';
 import { useQuery, gql } from "@apollo/client";
 import { useNavigate } from 'react-router-dom';
+
 //
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -23,10 +24,7 @@ const defaultTheme = createTheme();
 const LOGIN_QUERY = gql`
     query Query($email: String!, $password: String!) {
         freelancerLogin(email: $email, password: $password) {
-            password
-            email
-            id
-            username
+            token
     }
     }
 `;
@@ -36,16 +34,17 @@ function Login() {
     const [verified, setVerified] = useState(false); 
     const { error, loading, data } = useQuery(LOGIN_QUERY, {
         variables: { email, password },
-        skip: !email || !password, // Skip the query if email or password is not provided
+        //skip: !email || !password, // Skip the query if email or password is not provided
     });
     const navigate = useNavigate();
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (!loading && data?.freelancerLogin?.password === password && data?.freelancerLogin?.email === email) {
-            localStorage.setItem("currentUser", JSON.stringify(data.freelancerLogin));
-            // localStorage.setItem("iduser", JSON.stringify(data.freelancerLogin).id);
+        if (!loading && data) {
+            localStorage.setItem("token", JSON.stringify(data.freelancerLogin));
+
             navigate("/Pfrelancer");
-        } else {
+        } 
+        else {
         setVerified(true);
         console.log(error);
         }
@@ -56,12 +55,11 @@ return (
         <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box sx={{
-            marginTop: 8,
+            marginTop: '250px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            top: '400px',
-            position: 'relative'
+
         }}>
             <Avatar sx={{ m: 1, bgcolor: 'green' }}>
                 <LockOutlinedIcon />

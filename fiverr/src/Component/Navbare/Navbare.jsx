@@ -42,8 +42,8 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    backgroundColor: "#013914",
-    color: "white",
+    backgroundColor: "transparent",
+    color: "black",
     position: "fixed",
     top: 0,
     zIndex: 999,
@@ -57,40 +57,45 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: theme.spacing(2),
+    //marginTop: theme.spacing(2),
     },
     menuLink: {
     textDecoration: "none",
-    color: "White",
+    //color: "White",
     fontSize: "18px",
     marginLeft: theme.spacing(2),
     },
 }));
 
-
 function Navbare() {
     const classes = useStyles();
     const [active, setActive] = useState(false);
+    const [showLinks, setShowLinks] = useState(false);
     const { pathname } = useLocation();
-    const isActive = () => {
-    window.scrollY > 0 ? setActive(true) : setActive(false);
-    };
+    
+  const handleScroll = () => {
+    setActive(window.scrollY > 0);
+    setShowLinks(window.scrollY > 400);
+  };
+    
 
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    const token = JSON.parse(localStorage.getItem("token"));
     
     //console.log(currentUser);
     const navigate=useNavigate();
     const handleLogout = async () => {
-      localStorage.setItem("currentUser", null);
+      localStorage.setItem("token", null);
       navigate.replace("/");
     };
   
-    useEffect(() => {
-      window.addEventListener("scroll", isActive);
-      return () => {
-        window.removeEventListener("scroll", isActive);
-      };
-    }, []);
+    
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+    
   
     return (
       <AppBar className={`${classes.appBar} ${active && "active"}`} position="sticky">
@@ -108,7 +113,7 @@ function Navbare() {
             <Link to="/" className={`${classes.links} ${pathname === "/Pfrelancer" && "active"}`}>
             English
             </Link>
-          {currentUser ? (
+          {token ? (
             <>
               <Link to="/Pfrelancer" className={`${classes.links} ${pathname === "/Pfrelancer" && "active"}`}>
                   Frelancer
@@ -134,7 +139,7 @@ function Navbare() {
           </div>
           )}
         </Toolbar>
-        {(!active ) && (
+        {showLinks  && (
           <>
             <hr />
             <div className={`${classes.menu} ${active && "active"}`}>

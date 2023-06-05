@@ -68,7 +68,7 @@ export default function Checkout(){
     <ThemeProvider theme={theme}>
       <CssBaseline />
 
-      <Container component="main" maxWidth="lg" sx={{ mb: 4 ,position:'absolute',top:'200px',left:'170px'}} >
+      <Container component="main" maxWidth="lg" sx={{ marginTop:30}} >
         <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
           <Typography component="h1" variant="h4" align="center">
             Creat Service
